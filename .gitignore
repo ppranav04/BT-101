@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+checkpoints/
+*.ckpt
+*.pt
+*.safetensors
+wandb/
+data/
+*.mp4
+*.avi
+*.hdf5
+*.zarr
+.DS_Store
+.vscode/
+*.swp

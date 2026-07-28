@@ -32,6 +32,7 @@ class Servo():
         self.sms_servo = sms_sts(self.port_handler)
         self.baudrate = baudrate
     
+    
     def init_servo(self):
         # Open the serial port
         if self.port_handler.openPort():
@@ -39,17 +40,22 @@ class Servo():
             # Set the baud rate
             if self.port_handler.setBaudRate(self.baudrate):
                 print(f"✓ Baud rate set to {self.baudrate}")
+                for i in SERVO_LIMITS.keys():
+                    comm_result, _ = self.sms_servo.write1ByteTxRx(i, ADDR_TORQUE_ENABLE, 1)
+                    if comm_result != 0:
+                        print ("Torque enable failed")
+                        return False
+                print("✓ Torque enabled - servo is now holding position")
                 return True
             else:
                 print("✗ Failed to set baud rate")
         else:
             print("✗ Failed to open port")
 
+
     def move(self, SERVO_ID, dir):
         model_number, comm_result, error = self.sms_servo.ping(SERVO_ID)
         if comm_result == 0:
-            self.sms_servo.write1ByteTxRx(SERVO_ID, ADDR_TORQUE_ENABLE, 1)
-            print("✓ Torque enabled - servo is now holding position")
             move_limits = SERVO_LIMITS[SERVO_ID]
             if (-1638 <= dir <= 1638):
                     #Read current position

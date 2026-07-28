@@ -3,6 +3,7 @@ import pygame._sdl2.controller as sdl2_controller
 import servo_control
 
 SERIAL_PORT = '/dev/ttyACM0'
+BAUDRATE = 1000000
 
 axis_constants = [pg.CONTROLLER_AXIS_LEFTX, pg.CONTROLLER_AXIS_LEFTY,
 pg.CONTROLLER_AXIS_RIGHTX, pg.CONTROLLER_AXIS_RIGHTY,
@@ -48,8 +49,8 @@ if __name__ == "__main__":
 
         pg.event.pump()
         # Configuration
-        BAUDRATE = 1000000
+        
         SERVO_ID = (1,2,3,4,5,6)
-        Servo_control = servo_control.Servo()
-        if (Servo_control.init_servo):
-            pass
+        Servo_control = servo_control.Servo(SERIAL_PORT, BAUDRATE)
+        if (Servo_control.init_servo()):
+            print("Connected to servos")

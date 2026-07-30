@@ -4,7 +4,7 @@ import servo_control
 
 SERIAL_PORT = '/dev/ttyACM0'
 BAUDRATE = 1000000
-
+'''
 axis_constants = [pg.CONTROLLER_AXIS_LEFTX, pg.CONTROLLER_AXIS_LEFTY,
 pg.CONTROLLER_AXIS_RIGHTX, pg.CONTROLLER_AXIS_RIGHTY,
 pg.CONTROLLER_AXIS_TRIGGERLEFT, pg.CONTROLLER_AXIS_TRIGGERRIGHT]
@@ -16,6 +16,11 @@ pg.CONTROLLER_BUTTON_LEFTSHOULDER, pg.CONTROLLER_BUTTON_RIGHTSHOULDER,
 pg.CONTROLLER_BUTTON_LEFTSTICK, pg.CONTROLLER_BUTTON_RIGHTSTICK,
 pg.CONTROLLER_BUTTON_BACK, pg.CONTROLLER_BUTTON_GUIDE,
 pg.CONTROLLER_BUTTON_START]
+'''
+
+mapping  = {1:pg.CONTROLLER_AXIS_LEFTX, 2:pg.CONTROLLER_AXIS_LEFTY, 3:pg.CONTROLLER_AXIS_RIGHTX,
+             4:pg.CONTROLLER_AXIS_RIGHTY, 5:[pg.CONTROLLER_BUTTON_LEFTSHOULDER,pg.CONTROLLER_BUTTON_RIGHTSHOULDER],
+             6:[pg.CONTROLLER_AXIS_TRIGGERLEFT, pg.CONTROLLER_AXIS_TRIGGERRIGHT]}
 
 def init_controllers():
     pg.init()
@@ -32,7 +37,7 @@ class XboxCtrl:
     def get_axis(self, axis_constant) -> float:
         # Returnns nomalized value from -1.0 to 1.0
         raw = self.controller.get_axis(axis_constant)
-        return raw / 32768.0
+        return raw
 
     def get_button(self, button_constant) -> bool:
         c = self.controller.get_button(button_constant)
@@ -44,13 +49,37 @@ if __name__ == "__main__":
     if count == 0:
         print("No controller found.")
     else:
-        xbox  = XboxCtrl(0)
+        # Configuration        
+        xbox  = XboxCtrl()
         print(f"Connected: {xbox.name}")
+        servo = servo_control.Servo(SERIAL_PORT, BAUDRATE)
 
-        pg.event.pump()
-        # Configuration
         
-        SERVO_ID = (1,2,3,4,5,6)
-        Servo_control = servo_control.Servo(SERIAL_PORT, BAUDRATE)
-        if (Servo_control.init_servo()):
+        if (servo.init_servo()):
             print("Connected to servos")
+            while xbox.get_button(pg.CONTROLLER_BUTTON_START) != True:
+                pg.event.pump()
+                for i in mapping.keys():
+                    if 1 <= i <= 4:
+                        dir = xbox.get_axis(mapping[i])
+                        SERVO_ID = i
+                    elif i==5:
+                        choice = mapping[i]
+                        if xbox.get_button(choice[0]):
+                            dir = -1
+                        elif xbox.get_button(choice[1]):
+                            dir = 1
+                        else:
+                            dir = 0
+                        SERVO_ID = i
+                    else:
+                        choice = mapping[i]
+                        if xbox.get_axis(choice[0]) > 1638:
+                            dir = -1
+                        elif xbox.get_axis(choice[1]) > 1638:
+                            dir = 1                        
+                        else:
+                            dir = 0
+                        SERVO_ID = i
+                    servo.move(SERVO_ID, dir)
+            servo.shutdown() 

@@ -41,10 +41,15 @@ class Servo():
             if self.port_handler.setBaudRate(self.baudrate):
                 print(f"✓ Baud rate set to {self.baudrate}")
                 for i in SERVO_LIMITS.keys():
-                    comm_result, _ = self.sms_servo.write1ByteTxRx(i, ADDR_TORQUE_ENABLE, 1)
-                    if comm_result != 0:
-                        print ("Torque enable failed")
-                        return False
+                    model_number, comm_result, error = self.sms_servo.ping(i)
+                    if comm_result == 0:
+                        comm_result, _ = self.sms_servo.write1ByteTxRx(i, ADDR_TORQUE_ENABLE, 1)
+                        if comm_result != 0:
+                            print ("Torque enable failed")
+                            return False
+                    else:
+                        print(f"✗ Failed to ping servo")
+                        break
                 print("✓ Torque enabled - servo is now holding position")
                 return True
             else:
@@ -54,23 +59,54 @@ class Servo():
 
 
     def move(self, SERVO_ID, dir):
-        model_number, comm_result, error = self.sms_servo.ping(SERVO_ID)
-        if comm_result == 0:
-            move_limits = SERVO_LIMITS[SERVO_ID]
+        move_limits = SERVO_LIMITS[SERVO_ID]
+        if (1 <= SERVO_ID <=4):
             if (-1638 <= dir <= 1638):
-                    #Read current position
-                    position, comm_result, error = self.sms_servo.read2ByteTxRx(SERVO_ID, ADDR_PRESENT_POSITION)
-                    if comm_result == 0:
-                        self.sms_servo.WritePosEx(SERVO_ID, position, 1000, 50)
+                #Read current position:
+                position, comm_result, error = self.sms_servo.read2ByteTxRx(SERVO_ID, ADDR_PRESENT_POSITION)
+                if comm_result == 0:
+                    self.sms_servo.WritePosEx(SERVO_ID, position, 1000, 50)
+
             else:
-                if dir < 0:
+                if (dir < 0):
                     move_to = move_limits[0]
                     self.sms_servo.WritePosEx(SERVO_ID, move_to, 1000, 50)
                 else:
                     move_to = move_limits[1]
-                    self.sms_servo.WritePosEx(SERVO_ID, move_to, 1000, 50)                     
+                    self.sms_servo.WritePosEx(SERVO_ID, move_to, 1000, 50)
+        elif (SERVO_ID == 5):
+            if (dir == -1):
+                move_to = move_limits[0]
+                self.sms_servo.WritePosEx(SERVO_ID, move_to, 1000, 50)              
+            elif (dir == 1):
+                move_to = move_limits[1]
+                self.sms_servo.WritePosEx(SERVO_ID, move_to, 1000, 50)
+            else:
+                #Read current position:
+                position, comm_result, error = self.sms_servo.read2ByteTxRx(SERVO_ID, ADDR_PRESENT_POSITION)
+                if comm_result == 0:
+                    self.sms_servo.WritePosEx(SERVO_ID, position, 1000, 50)
         else:
-            print(f"✗ Failed to ping servo")
+            if (dir == -1):
+                move_to = move_limits[0]
+                self.sms_servo.WritePosEx(SERVO_ID, move_to, 1000, 50)              
+            elif (dir == 1):
+                move_to = move_limits[1]
+                self.sms_servo.WritePosEx(SERVO_ID, move_to, 1000, 50)
+            else:
+                #Read current position:
+                position, comm_result, error = self.sms_servo.read2ByteTxRx(SERVO_ID, ADDR_PRESENT_POSITION)
+                if comm_result == 0:
+                    self.sms_servo.WritePosEx(SERVO_ID, position, 1000, 50)
+
+    def shutdown(self):
+        # Disable torque and close port
+        for i in SERVO_LIMITS.keys():
+            self.sms_servo.write1ByteTxRx(i, ADDR_TORQUE_ENABLE, 0)
+        print("✓ Torque disabled")
+
+        self.port_handler.closePort()
+        print("✓ Port closed")       
 
 
 

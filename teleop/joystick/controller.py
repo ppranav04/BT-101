@@ -22,12 +22,26 @@ mapping  = {1:pg.CONTROLLER_AXIS_LEFTX, 2:pg.CONTROLLER_AXIS_LEFTY, 3:pg.CONTROL
              4:pg.CONTROLLER_AXIS_RIGHTY, 5:[pg.CONTROLLER_BUTTON_LEFTSHOULDER,pg.CONTROLLER_BUTTON_RIGHTSHOULDER],
              6:[pg.CONTROLLER_AXIS_TRIGGERLEFT, pg.CONTROLLER_AXIS_TRIGGERRIGHT]}
 
+CONTROL_HELP = {
+    1: "Left Stick X  -> shoulder_pan",
+    2: "Left Stick Y  -> shoulder_lift",
+    3: "Right Stick X -> elbow_flex",
+    4: "Right Stick Y -> wrist_flex",
+    5: "LB / RB       -> wrist_roll",
+    6: "LT / RT       -> gripper (open/close)",
+}
+
+def print_controls():
+    print("Controls:")
+    for servo_id, desc in CONTROL_HELP.items():
+        print(f"  {desc}")
+
 def init_controllers():
     pg.init()
     sdl2_controller.init()
     count = sdl2_controller.get_count()
     return count
-    
+
 
 class XboxCtrl:
     def __init__(self, index: int = 0):
@@ -51,6 +65,7 @@ if __name__ == "__main__":
         # Configuration        
         xbox  = XboxCtrl()
         print(f"Connected: {xbox.name}")
+        print_controls()
         servo = servo_control.Servo(SERIAL_PORT, BAUDRATE)
 
         

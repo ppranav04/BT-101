@@ -35,7 +35,6 @@ class XboxCtrl:
         self.name = self.controller.name
 
     def get_axis(self, axis_constant) -> float:
-        # Returnns nomalized value from -1.0 to 1.0
         raw = self.controller.get_axis(axis_constant)
         return raw
 
@@ -82,4 +81,6 @@ if __name__ == "__main__":
                             dir = 0
                         SERVO_ID = i
                     servo.move(SERVO_ID, dir)
-            servo.shutdown() 
+            servo.shutdown()
+        else:
+            print("Servo initialisaiton failed")

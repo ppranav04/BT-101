@@ -1,18 +1,6 @@
 import serial.tools.list_ports
 from scservo_sdk import sms_sts, PortHandler
 
-
-
-def check_ports(): # List all available serial ports
-    ports = serial.tools.list_ports.comports()
-    
-    print("Available serial ports:")
-    for port in ports:
-        print(f"  {port.device}")
-        print(f"    Description: {port.description}")
-        print(f"    Manufacturer: {port.manufacturer}")
-        print()
-
 # Register addresses
 ADDR_PRESENT_POSITION = 56
 ADDR_PRESENT_VOLTAGE = 62
@@ -49,7 +37,7 @@ class Servo():
                             return False
                     else:
                         print(f"✗ Failed to ping servo")
-                        break
+                        return False
                 print("✓ Torque enabled - servo is now holding position")
                 return True
             else:
@@ -107,3 +95,17 @@ class Servo():
 
         self.port_handler.closePort()
         print("✓ Port closed")       
+
+
+# Code snippet to check codes
+'''
+def check_ports(): # List all available serial ports
+    ports = serial.tools.list_ports.comports()
+    
+    print("Available serial ports:")
+    for port in ports:
+        print(f"  {port.device}")
+        print(f"    Description: {port.description}")
+        print(f"    Manufacturer: {port.manufacturer}")
+        print()
+'''

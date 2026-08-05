@@ -1,9 +1,9 @@
 from scservo_sdk import sms_sts, PortHandler
+import time
 
-follower_limits = {1: (730, 3440), 2: (740, 3340), 3: (750, 3040), 4: (900, 3270), 5: (10, 4095), 6: (2020,3520)}
-
-# Correct this
-leader_limits = {1: (730, 3440), 2: (740, 3340), 3: (750, 3040), 4: (900, 3270), 5: (10, 4095), 6: (2020,3520)}
+follower_limits = {1: (761, 3410), 2: (686, 3308), 3: (807, 3106), 4: (858, 3187), 5: (0, 4095), 6: (2046,3472)}
+follower_home =  {1: 1984, 2: 833, 3: 3100, 4: 2886, 5: 2002, 6: 2067}
+leader_limits = {1: (832, 3498), 2: (787, 3185), 3: (932, 3141), 4: (37, 2344), 5: (0, 4095), 6: (2046, 3300)}
 
 # Register addresses
 ADDR_PRESENT_POSITION = 56
@@ -72,29 +72,54 @@ class Servo:
         return True
 
     def read(self, ID) -> int:
-        l_pos, comm_result, error = self.leader_servo.read2ByteTxRx(ID, ADDR_PRESENT_POSITION)
+        f_pos, comm_result, error = self.follower_servo.read2ByteTxRx(ID, ADDR_PRESENT_POSITION)
         if comm_result == 0:
-            f_pos, comm_result, error = self.follower_servo.read2ByteTxRx(ID, ADDR_PRESENT_POSITION)
+            l_pos, comm_result, error = self.leader_servo.read2ByteTxRx(ID, ADDR_PRESENT_POSITION)        
             if comm_result == 0:
-                if l_pos != f_pos:
-                    return True, f_pos
+                follower_maxmin = follower_limits[ID]
+                leader_maxmin = leader_limits[ID]
+                fraction = (l_pos - leader_maxmin[0])/(leader_maxmin[1]-leader_maxmin[0])
+                follower_goal = follower_maxmin[0] + fraction * (follower_maxmin[1]-follower_maxmin[0])
+     
+                if follower_goal != f_pos:
+
+                    return True, int(follower_goal)
                 else:
-                    return False
+                    return False, f_pos
             else:
-                print(f"Follower servo {ID} read failed")
+                print(f"Leader servo {ID} read failed")
+                return False, f_pos
         else:
-            print(f"Leader servo {ID} read failed")
+            print(f"Follower servo {ID} read failed")
+            return False, f_pos
 
     def move(self, follower_ID, val):
         position, comm_result, error = self.follower_servo.read2ByteTxRx(follower_ID, ADDR_PRESENT_POSITION)
         if comm_result == 0:
-            limits = follower_limits[follower_ID-1]
-            if limits[0] < position < limits[1]:
+            limits = follower_limits[follower_ID]
+            if limits[0] <= val <= limits[1]:
                 self.follower_servo.WritePosEx(follower_ID, val, 1000, 50)
             else:
-                print("Leader out of follower safe range")
+                if follower_ID != 6:
+                    print(f"Leader out of follower {follower_ID} safe range")
+                else:
+                    print(f"Leader gripper closed more than required")
         else:
-            print(f"Leader servo {follower_ID} read failed")
+            print(f"Follower servo {follower_ID} read failed")
+
+    def shutdown(self):
+            #Home pos
+            for i in follower_home.keys():
+                self.follower_servo.WritePosEx(i, follower_home[i], 1000, 50)
+            time.sleep(3)
+            # Disable torque and close port
+            for i in follower_home.keys():
+                self.follower_servo.write1ByteTxRx(i, ADDR_TORQUE_ENABLE, 0)
+            print("✓ Torque disabled")
+            self.leader_port.closePort()
+            self.follower_port.closePort()
+            print("✓ Port closed") 
+        
 
 
         

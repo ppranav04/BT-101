@@ -12,7 +12,7 @@ This project is deliberately built **from scratch** where it matters: leader-fol
 
 - [x] **Phase 1 - Teleoperation**
   - [x] Joystick teleop (Xbox controller -> Feetech servos), from scratch
-  - [ ] Leader-follower teleop, from scratch *(in progress)*
+  - [x] Leader-follower teleop, from scratch 
 - [ ] **Phase 2 - Imitation Learning** - record demonstrations, train ACT and Diffusion Policy models
 - [ ] **Phase 3 - Autonomous Manipulation** - validate trained policies on real pick-and-place tasks
 - [ ] **Phase 4 - Expressive Embodied Assistant** *(capstone)* - voice-responsive companion: listens via STT, generates expressive motion while talking
@@ -23,7 +23,9 @@ This project is deliberately built **from scratch** where it matters: leader-fol
 
 ![Joystick teleop demo](docs/media/joystick/Joystick_Servo.gif)
 
-*(Leader-follower demo to be added once that phase is complete.)*
+**Leader-Follower teleop**: The leader arm is used to teleoperate the follower arm in real time:
+
+![Leader-Follower teleop demo](docs/media/leader-follower/leader-follower.gif)
 
 ## Hardware
 
@@ -36,7 +38,7 @@ This project is deliberately built **from scratch** where it matters: leader-fol
 BT-101/
 ├── teleop/
 │   ├── joystick/          - Xbox controller → servo teleop (from scratch, hardware-validated)
-│   └── leader-follower/   - leader-follower teleop (from scratch, in progress)
+│   └── leader-follower/   - leader-follower teleop (from scratch, hardware-validated)
 └── docs/media/            - demo gifs and photos of the physical rig
 ```
 
@@ -45,6 +47,11 @@ BT-101/
   ```
   cd teleop/joystick
   python controller.py
+  ```
+- Run the leader-follower demo:
+  ```
+  cd teleop/leader-follower
+  python teleop.py
   ```
 
 ## Acknowledgments

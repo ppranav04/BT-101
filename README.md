@@ -27,6 +27,20 @@ This project is deliberately built **from scratch** where it matters: leader-fol
 
 ![Leader-Follower teleop demo](docs/media/leader-follower/leader-follower.gif)
 
+## Results
+
+**Teleop loop rate:** measured with `measure_hz.py` ([joystick](teleop/joystick/analysis/measure_hz.py), [leader-follower](teleop/leader-follower/analysis/measure_hz.py)) over 30 s runs on a 1 Mbps servo bus.
+
+| Teleop | Condition | Rate | Median cycle |
+|---|---|---|---|
+| Joystick | All joints held | 276 Hz | 3.60 ms |
+| Joystick | All joints driven | 500 Hz | 2.00 ms |
+| Joystick | Normal driving | 293 Hz | 3.41 ms |
+| Leader-follower | Leader at rest | 144 Hz | 6.93 ms |
+| Leader-follower | Normal teleop | 145 Hz | 6.90 ms |
+
+Both loops are entirely bus-bound: ~99.5% of each cycle is serial round trips at ~0.3 ms each, so the rate is set by how many calls a cycle makes (joystick 6–12, leader-follower 24). The timing is very consistent (p99 within 15% of median). Full analysis: [docs/phase_logs/phase1_teleop_loop_rate.md](docs/phase_logs/phase1_teleop_loop_rate.md)
+
 ## Hardware
 
 - **Manipulator:** SO-101 leader-follower arm pair: open-source design by [TheRobotStudio](https://github.com/TheRobotStudio/SO-ARM100), in collaboration with Hugging Face.
@@ -39,7 +53,9 @@ BT-101/
 ├── teleop/
 │   ├── joystick/          - Xbox controller → servo teleop (from scratch, hardware-validated)
 │   └── leader-follower/   - leader-follower teleop (from scratch, hardware-validated)
-└── docs/media/            - demo gifs and photos of the physical rig
+└── docs/
+    ├── media/             - demo gifs, plots, and photos of the physical rig
+    └── phase_logs/        - per-milestone write-ups and result analysis
 ```
 
 ## Setup

@@ -58,17 +58,6 @@ BT-101/
     └── phase_logs/        - per-milestone write-ups and result analysis
 ```
 
-## Setup
-- Run the joystick demo:
-  ```
-  cd teleop/joystick
-  python controller.py
-  ```
-- Run the leader-follower demo:
-  ```
-  cd teleop/leader-follower
-  python teleop.py
-  ```
 
 ## Acknowledgments
 

@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.dirname(HERE))
 RESULTS_DIR = os.path.join(HERE, "results")
 
 import servo_control
-from controller import SERIAL_PORT, BAUDRATE, mapping, init_controllers, XboxCtrl
+from teleop.joystick.joystick_teleop import SERIAL_PORT, BAUDRATE, mapping, init_controllers, XboxCtrl
 
 DEADZONE = 1638  # must match the axis deadzone in controller.py / servo_control.move()
 

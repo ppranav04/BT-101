@@ -67,4 +67,4 @@ BT-101/
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE)

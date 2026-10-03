@@ -136,22 +136,6 @@ The policy has learned the **structure** of the task but not the **precision**:
 2. **Too few demos to fill in between positions.** 15 demos spread over the start region. Test: compare positions I demonstrated against new positions between them. Misses only at new positions → generalization. Misses everywhere → precision or data quality.
 3. **It can't notice a missed grasp.** Every demo succeeded, so the policy has never seen a miss followed by a retry. With `n_action_steps=100` it also executes ~3.3 s of actions without looking at the camera again, so "close → lift → go to box" can be committed before any new observation. The gripper position (`observation.state[5]`) differs between closing on the ball and closing on nothing, but that signal was never linked to "retry" in the data.
 
-## What surprised me
-
-<!-- Pranav: in your own words -->
-
-## What I'd change for the real dataset
-
-<!-- Pranav: e.g. rest pose consistency, demo count, failed-grasp/retry demos, wrist cam -->
-
-## Next
-
-- Fill in the per-trial table and check the three hypotheses.
-- Stage B, when the wrist cam (InnoMaker U20CAM-1080P on TheRobotStudio's [SO101 wrist mount](https://github.com/TheRobotStudio/SO-ARM100/tree/main/Optional/SO101_Wrist_Cam_Hex-Nut_Mount_32x32_UVC_Module)) arrives:
-  - check cable routing against wrist_roll's full range
-  - check both MJPG streams together on the USB 2.0 bus
-  - record ~50 episodes with `front` + `wrist`
-  - train ACT, then the front-only vs front+wrist ablation on the same data
 
 ## Reproduce
 

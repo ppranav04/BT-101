@@ -2,12 +2,12 @@ from lerobot.teleoperators.so_leader import SO101Leader, SO101LeaderConfig
 from lerobot.robots.so_follower import SO101Follower, SO101FollowerConfig
 
 robot_config = SO101FollowerConfig(
-    port="/dev/ttyACM0",
+    port="/dev/serial/by-id/usb-1a86_USB_Single_Serial_5AE6081270-if00",
     id="BT101_follower",
 )
 
 teleop_config = SO101LeaderConfig(
-    port="/dev/ttyACM1",
+    port="/dev/serial/by-id/usb-1a86_USB_Single_Serial_5AE6082952-if00",
     id="BT101_leader",
 )
 

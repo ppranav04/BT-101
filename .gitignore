@@ -19,4 +19,4 @@ tempCodeRunnerFile.py
 # measure_hz.py raw output (curated plots live in docs/media/)
 hz_*.npz
 hz_*.png
-/outputs
+outputs/
